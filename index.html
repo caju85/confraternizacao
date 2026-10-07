@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação - Confraternização SAC & Amigos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        .terminal { background-color: #0f172a; font-family: 'Courier New', Courier, monospace; }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            z-index: 50;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+    <div id="confetti-container"></div>
+    
+    <div class="max-w-2xl mx-auto pt-10 px-4">
+        <!-- Cabeçalho -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black text-red-700 mb-2">🔥 Confraternização SAC & Amigos</h1>
+            <p class="text-gray-600 font-medium">Confirme sua presença e responda as enquetes.</p>
+        </div>
+
+        <!-- Formulário principal -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100">
+            <form id="rsvp-form" class="space-y-6">
+                
+                <!-- Nome -->
+                <div>
+                    <label for="name" class="block text-base font-bold text-red-700 mb-2">Nome Completo</label>
+                    <input type="text" id="name" placeholder="Digite seu nome" required
+                        class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all font-medium">
+                </div>
+
+                <!-- Disponibilidade -->
+                <div class="bg-gray-50 p-5 rounded-xl border-2 border-gray-100">
+                    <label class="block text-base font-bold text-red-700 mb-3">Selecione sua disponibilidade</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="availability" value="Nenhum dia" class="peer sr-only" required>
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-yellow-400 peer-checked:text-red-900 peer-checked:border-yellow-400 font-bold transition-all select-none text-sm">Nenhum dia</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="availability" value="12/12" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">12/12</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="availability" value="13/12" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">13/12</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="availability" value="19/12" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">19/12</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="availability" value="20/12" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">20/12</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="availability" value="Qualquer dia ta ótimo!" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600 font-bold transition-all select-none text-sm flex items-center justify-center">Qualquer dia</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Acompanhantes -->
+                <div class="bg-gray-50 p-5 rounded-xl border-2 border-gray-100">
+                    <label class="block text-base font-bold text-red-700 mb-3">Quantidade de Acompanhantes</label>
+                    <div class="grid grid-cols-5 gap-2 md:gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="guests" value="0" class="peer sr-only" required>
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none">0</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="guests" value="1" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none">1</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="guests" value="2" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none">2</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="guests" value="3" class="peer sr-only">
+                            <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none">3</div>
+                        </label>
+                        <label class="cursor-pointer h-full">
+                            <input type="radio" name="guests" value="4" class="peer sr-only">
+                            <div class="flex flex-col items-center justify-center bg-yellow-50 border-2 border-yellow-400 rounded-lg py-1 h-full text-red-800 peer-checked:bg-yellow-400 peer-checked:border-yellow-500 font-black transition-all select-none text-center shadow-sm">
+                                <span class="text-[10px] md:text-[11px] uppercase leading-tight">Família</span>
+                                <span class="text-xs md:text-sm leading-tight">Dias</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Enquete do Churrasco -->
+                <div class="bg-gray-50 p-5 rounded-xl border-2 border-gray-100">
+                    <label class="block text-base font-bold text-red-700 mb-3">Enquete do Churrasco</label>
+                    <div class="space-y-3">
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors bg-white group">
+                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full group-hover:border-yellow-500 flex items-center justify-center mr-3 relative">
+                                <input type="radio" name="poll" value="Kit churras + Sua Bebida" class="peer sr-only" required>
+                                <div class="w-3 h-3 bg-red-600 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                            <span class="font-semibold text-gray-800 select-none">Kit churras + Sua Bebida</span>
+                        </label>
+                        <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-yellow-400 transition-colors bg-white group">
+                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full group-hover:border-yellow-500 flex items-center justify-center mr-3 relative">
+                                <input type="radio" name="poll" value="Rateio da Carne + Sua Bebida" class="peer sr-only">
+                                <div class="w-3 h-3 bg-red-600 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                            </div>
+                            <span class="font-semibold text-gray-800 select-none">Rateio da Carne + Sua Bebida</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Termo de Convivência -->
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-5 rounded-r-xl">
+                    <label class="flex items-start cursor-pointer">
+                        <input type="checkbox" id="terms" class="mt-1 w-5 h-5 text-red-600 accent-red-600 rounded focus:ring-red-500 shrink-0" required>
+                        <span class="ml-3 text-sm text-red-900 font-semibold leading-relaxed select-none">
+                            O SAC da área de TI do HC/Unicamp preza por um ambiente plural e democrático. Celebramos a diversidade e o respeito mútuo. Atitudes intolerantes ou extremistas não fazem parte da nossa cultura e não são bem-vindas em nosso evento.
+                        </span>
+                    </label>
+                </div>
+
+                <div id="form-message" class="hidden"></div>
+                
+                <button type="submit" id="submit-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-black text-xl py-4 rounded-xl shadow-md transition-all uppercase tracking-widest active:translate-y-1">
+                    Enviar Resposta
+                </button>
+            </form>
+        </div>
+
+        <!-- Terminal Section -->
+        <div class="mt-8 rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
+            <div class="bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-700">
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                <div class="text-gray-400 text-xs font-mono tracking-wider">sac-confra-db</div>
+                <div id="connection-status" class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
+                    <span class="text-xs text-yellow-500 font-mono">Conectando...</span>
+                </div>
+            </div>
+            
+            <div class="terminal p-4 h-64 overflow-y-auto text-sm text-gray-300" id="terminal-logs">
+                <div class="text-green-400">> Inicializando sistema... [OK]</div>
+            </div>
+            
+            <div class="bg-gray-900 px-4 py-3 border-t border-gray-700">
+                <div class="grid grid-cols-2 text-xs font-mono gap-y-2 text-gray-300">
+                    <div class="text-blue-400">> STATUS:</div>
+                    <div>> Confirmados: <span id="sum-users" class="text-white font-bold">0</span></div>
+                    <div>> Acompanhantes: <span id="sum-guests" class="text-white font-bold">0</span></div>
+                    <div class="text-red-500 font-bold">> TOTAL: <span id="sum-total" class="text-white font-black">0</span></div>
+                    
+                    <div class="col-span-2 mt-2 border-t border-gray-800 pt-2 text-gray-400 flex flex-col sm:flex-row sm:gap-4">
+                        <span class="text-yellow-500">> ENQUETE CHURRAS:</span>
+                        <span>[Kit Churrasco: <span id="sum-kit" class="text-white font-bold">0</span>]</span>
+                        <span>[Rateio da Carne: <span id="sum-rateio" class="text-white font-bold">0</span>]</span>
+                    </div>
+                    <div class="col-span-2 mt-1 text-gray-400 flex flex-col sm:flex-row sm:gap-4 sm:flex-wrap">
+                        <span class="text-green-400">> DATAS:</span>
+                        <span>[12/12: <span id="sum-d12" class="text-white font-bold">0</span>]</span>
+                        <span>[13/12: <span id="sum-d13" class="text-white font-bold">0</span>]</span>
+                        <span>[19/12: <span id="sum-d19" class="text-white font-bold">0</span>]</span>
+                        <span>[20/12: <span id="sum-d20" class="text-white font-bold">0</span>]</span>
+                        <span>[Qualquer: <span id="sum-any" class="text-white font-bold">0</span>]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('rsvp-form');
+        const nameInput = document.getElementById('name');
+        const formMessage = document.getElementById('form-message');
+        const submitBtn = document.getElementById('submit-btn');
+        const termLogs = document.getElementById('terminal-logs');
+        const connectionStatus = document.getElementById('connection-status');
+
+        function showMessage(msg, type = 'error') {
+            formMessage.textContent = msg;
+            formMessage.classList.remove('hidden');
+            formMessage.className = `p-4 rounded-xl text-sm font-bold text-center border-2 mb-4 ${
+                type === 'error' 
+                    ? 'bg-red-50 text-red-600 border-red-200' 
+                    : 'bg-green-50 text-green-700 border-green-200'
+            }`;
+        }
+
+        function hideMessage() {
+            formMessage.classList.add('hidden');
+        }
+
+        async function fetchReservations() {
+            try {
+                const res = await fetch('/api/rsvp');
+                if (!res.ok) throw new Error("Erro na API");
+                const data = await res.json();
+                
+                termLogs.innerHTML = `<div class="text-gray-500">> Sincronizando tabela rsvp_list...</div>`;
+                
+                let stats = { titulares: 0, acompanhantes: 0, kit: 0, rateio: 0, d12: 0, d13: 0, d19: 0, d20: 0, any: 0 };
+                
+                data.forEach(item => {
+                    renderLogLine(item);
+                    if (item.availability !== 'Nenhum dia') {
+                        stats.titulares++;
+                        stats.acompanhantes += parseInt(item.guests || 0);
+                        if (item.poll && item.poll.includes('Kit')) stats.kit += (1 + parseInt(item.guests || 0));
+                        if (item.poll && item.poll.includes('Rateio')) stats.rateio += (1 + parseInt(item.guests || 0));
+                        
+                        if (item.availability === '12/12') stats.d12 += (1 + parseInt(item.guests || 0));
+                        if (item.availability === '13/12') stats.d13 += (1 + parseInt(item.guests || 0));
+                        if (item.availability === '19/12') stats.d19 += (1 + parseInt(item.guests || 0));
+                        if (item.availability === '20/12') stats.d20 += (1 + parseInt(item.guests || 0));
+                        if (item.availability === 'Qualquer dia ta ótimo!') stats.any += (1 + parseInt(item.guests || 0));
+                    }
+                });
+
+                document.getElementById('sum-users').textContent = stats.titulares;
+                document.getElementById('sum-guests').textContent = stats.acompanhantes;
+                document.getElementById('sum-total').textContent = stats.titulares + stats.acompanhantes;
+                document.getElementById('sum-kit').textContent = stats.kit;
+                document.getElementById('sum-rateio').textContent = stats.rateio;
+                document.getElementById('sum-d12').textContent = stats.d12;
+                document.getElementById('sum-d13').textContent = stats.d13;
+                document.getElementById('sum-d19').textContent = stats.d19;
+                document.getElementById('sum-d20').textContent = stats.d20;
+                document.getElementById('sum-any').textContent = stats.any;
+
+                connectionStatus.innerHTML = `
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="text-xs text-green-500 font-mono">Online</span>
+                `;
+            } catch (error) {
+                console.error("Fetch error:", error);
+                connectionStatus.innerHTML = `
+                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                    <span class="text-xs text-red-500 font-mono">Offline</span>
+                `;
+                termLogs.innerHTML += `<div class="text-red-500">> Falha na conexão com API.</div>`;
+            }
+        }
+
+        function renderLogLine(data) {
+            const div = document.createElement('div');
+            const safeName = (data.name || 'Anônimo').replace(/"/g, "'");
+
+            if (data.availability !== 'Nenhum dia') {
+                let guestLabel = data.guests == 4 ? "'Familia Dias'" : data.guests;
+                let pollLabel = (data.poll || '').includes('Kit') ? "'Kit'" : "'Rateio'";
+                div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp, convidados, enquete) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-yellow-400">"${data.availability}"</span>, <span class="text-white">${guestLabel}</span>, <span class="text-white">${pollLabel}</span>); <span class="text-gray-500">// OK</span>`;
+            } else {
+                div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-red-500">"AUSENTE"</span>); <span class="text-gray-500">// OK</span>`;
+            }
+
+            termLogs.appendChild(div);
+            termLogs.scrollTop = termLogs.scrollHeight;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+            
+            const name = nameInput.value.trim();
+            if (!name) { showMessage("Por favor, digite seu Nome Completo."); return; }
+
+            const availabilityRadio = document.querySelector('input[name="availability"]:checked');
+            if (!availabilityRadio) { showMessage("Selecione sua disponibilidade."); return; }
+            const availability = availabilityRadio.value;
+
+            const guestRadio = document.querySelector('input[name="guests"]:checked');
+            if (!guestRadio) { showMessage("Selecione a quantidade de acompanhantes."); return; }
+            const guests = parseInt(guestRadio.value);
+
+            const pollRadio = document.querySelector('input[name="poll"]:checked');
+            if (!pollRadio) { showMessage("Responda à Enquete do Churrasco."); return; }
+            const poll = pollRadio.value;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processando...';
+
+            try {
+                const response = await fetch('/api/rsvp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, availability, guests, poll })
+                });
+
+                if (!response.ok) throw new Error("Erro ao salvar");
+
+                showMessage("Registro efetuado com sucesso! Verifique o terminal abaixo.", "success");
+                
+                await fetchReservations();
+                
+                setTimeout(() => {
+                    form.reset();
+                    hideMessage();
+                }, 3000);
+
+            } catch (error) {
+                console.error("Save error:", error);
+                showMessage("Falha na gravação. Tente novamente.", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Resposta';
+            }
+        });
+
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['bg-red-600', 'bg-yellow-400', 'bg-white', 'bg-red-400']; 
+            
+            setInterval(() => {
+                const conf = document.createElement('div');
+                const colorClass = colors[Math.floor(Math.random() * colors.length)];
+                
+                conf.className = `confetti ${colorClass} shadow-sm`;
+                conf.style.left = Math.random() * 100 + 'vw';
+                
+                const duration = Math.random() * 3 + 3; // 3s a 6s
+                conf.style.animationDuration = duration + 's';
+                
+                container.appendChild(conf);
+                
+                setTimeout(() => {
+                    if (conf.parentNode) conf.parentNode.removeChild(conf);
+                }, duration * 1000);
+            }, 300);
+        }
+
+        window.onload = () => {
+            createConfetti();
+            fetchReservations();
+            setInterval(fetchReservations, 10000);
+        };
+    </script>
+</body>
+</html>
