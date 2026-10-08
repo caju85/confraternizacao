@@ -300,12 +300,16 @@
 
         function renderLogLine(data) {
             const div = document.createElement('div');
-            const safeName = (data.name || 'Anônimo').replace(/"/g, "'");
+            
+            const escapeHTML = str => str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            
+            const safeName = escapeHTML(data.name || 'Anônimo');
+            const safeAvail = escapeHTML(data.availability || 'Nenhum dia');
 
             if (data.availability !== 'Nenhum dia') {
-                let guestLabel = data.guests == 4 ? "'Familia Dias'" : data.guests;
+                let guestLabel = data.guests == 4 ? "'Familia Dias'" : escapeHTML(data.guests || 0);
                 let pollLabel = (data.poll || '').includes('Kit') ? "'Kit'" : "'Rateio'";
-                div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp, convidados, enquete) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-yellow-400">"${data.availability}"</span>, <span class="text-white">${guestLabel}</span>, <span class="text-white">${pollLabel}</span>); <span class="text-gray-500">// OK</span>`;
+                div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp, convidados, enquete) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-yellow-400">"${safeAvail}"</span>, <span class="text-white">${guestLabel}</span>, <span class="text-white">${pollLabel}</span>); <span class="text-gray-500">// OK</span>`;
             } else {
                 div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-red-500">"AUSENTE"</span>); <span class="text-gray-500">// OK</span>`;
             }

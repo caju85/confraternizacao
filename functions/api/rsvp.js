@@ -16,7 +16,18 @@ export async function onRequest(context) {
   if (context.request.method === "POST") {
     try {
       const data = await context.request.json();
-      const name = (data.name || "Anônimo").trim();
+      
+      // Sanitização básica
+      let name = (data.name || "").toString().trim().substring(0, 50);
+      if (!name) name = "Anônimo";
+      name = name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      
+      let availability = (data.availability || "Nenhum dia").toString().substring(0, 100).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      let poll = (data.poll || "").toString().substring(0, 100).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      
+      let guests = parseInt(data.guests);
+      if (isNaN(guests) || guests < 0) guests = 0;
+      if (guests > 10) guests = 10; // Limite razoável para evitar estourar estatísticas
       
       // Check for duplicate name
       const existing = await db.prepare("SELECT id FROM rsvp WHERE LOWER(name) = LOWER(?)").bind(name).first();
@@ -33,9 +44,9 @@ export async function onRequest(context) {
       )
       .bind(
         name, 
-        data.availability || "Nenhum dia", 
-        data.guests || 0, 
-        data.poll || "", 
+        availability, 
+        guests, 
+        poll, 
         Date.now()
       )
       .run();
