@@ -270,7 +270,7 @@
             const div = document.createElement('div');
             const safeName = (data.name || 'Anônimo').replace(/"/g, "'");
 
-            if (!data.availability.includes('Nenhum dia') && !data.availability.includes('Sugestão:')) { {
+            if (!data.availability.includes('Nenhum dia') && !data.availability.includes('Sugestão:')) {
                 let guestLabel = data.guests == 4 ? "'Familia Dias'" : data.guests;
                 let pollLabel = (data.poll || '').includes('Kit') ? "'Kit'" : "'Rateio'";
                 div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp, convidados, enquete) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-yellow-400">"${data.availability}"</span>, <span class="text-white">${guestLabel}</span>, <span class="text-white">${pollLabel}</span>); <span class="text-gray-500">// OK</span>`;
