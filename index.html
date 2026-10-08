@@ -187,7 +187,7 @@
                         <span>[19/12: <span id="sum-d19" class="text-white font-bold">0</span>]</span>
                         <span>[20/12: <span id="sum-d20" class="text-white font-bold">0</span>]</span>
                         <span>[Qualquer: <span id="sum-any" class="text-white font-bold">0</span>]</span>
-                        <span>[Sugestões: <span id="sum-sug" class="text-yellow-400 font-bold"></span>]</span>
+                        <span id="dynamic-sugs" style="display: contents;"></span>
                     </div>
                 </div>
             </div>
@@ -224,7 +224,7 @@
                 
                 termLogs.innerHTML = `<div class="text-gray-500">> Sincronizando tabela rsvp_list...</div>`;
                 
-                let stats = { titulares: 0, acompanhantes: 0, kit: 0, rateio: 0, d12: 0, d13: 0, d19: 0, d20: 0, any: 0, sugs: [] };
+                let stats = { titulares: 0, acompanhantes: 0, kit: 0, rateio: 0, d12: 0, d13: 0, d19: 0, d20: 0, any: 0, sugs: {} };
                 
                 data.forEach(item => {
                     renderLogLine(item);
@@ -242,7 +242,13 @@
                         
                         if (item.availability.includes('Sugestão:')) {
                             let dt = item.availability.replace('Sugestão:', '').trim();
-                            if (dt) stats.sugs.push(dt);
+                            if (dt.includes('-')) {
+                                let parts = dt.split('-');
+                                if (parts.length === 3) dt = parts[2] + '/' + parts[1];
+                            }
+                            if (dt) {
+                                stats.sugs[dt] = (stats.sugs[dt] || 0) + (1 + parseInt(item.guests || 0));
+                            }
                         }
                     }
                 });
@@ -258,9 +264,18 @@
                 document.getElementById('sum-d20').textContent = stats.d20;
                 document.getElementById('sum-any').textContent = stats.any;
                 
-                let sugElem = document.getElementById('sum-sug');
-                if (sugElem) {
-                    sugElem.textContent = stats.sugs.length > 0 ? stats.sugs.join(', ') : 'Nenhuma';
+                let sugsContainer = document.getElementById('dynamic-sugs');
+                if (sugsContainer) {
+                    let entries = Object.entries(stats.sugs);
+                    if (entries.length > 0) {
+                        let html = '';
+                        entries.forEach(([date, count]) => {
+                            html += `<span>[${date}: <span class="text-white font-bold">${count}</span>]</span> `;
+                        });
+                        sugsContainer.innerHTML = html;
+                    } else {
+                        sugsContainer.innerHTML = `<span>[Sugestões: <span class="text-yellow-400 font-bold">Nenhuma</span>]</span>`;
+                    }
                 }
 
                 connectionStatus.innerHTML = `
