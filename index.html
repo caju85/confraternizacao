@@ -380,6 +380,9 @@
                     cbQualquer.checked = false;
                     dateCbs.forEach(cb => cb.checked = false);
                     otherDateContainer.classList.remove("hidden");
+                    try {
+                        otherDateInput.showPicker();
+                    } catch (err) {}
                 } else {
                     otherDateContainer.classList.add("hidden");
                 }
