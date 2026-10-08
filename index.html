@@ -75,7 +75,7 @@
                         </label>
                     </div>
                     <div id="other-date-container" class="mt-3 hidden">
-                        <input type="text" id="other-date" placeholder="Sugira uma nova data" class="w-full bg-white border-2 border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all font-medium text-sm">
+                        <input type="date" id="other-date" class="w-full bg-white border-2 border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all font-medium text-sm">
                     </div>
                 </div>
 
@@ -389,8 +389,6 @@
                 if (e.target.checked) {
                     cbNenhum.checked = false;
                     otherDateContainer.classList.add("hidden");
-                    dateCbs.forEach(cb => cb.checked = true);
-                } else {
                     dateCbs.forEach(cb => cb.checked = false);
                 }
             });
@@ -400,13 +398,15 @@
                     if (cb.checked) {
                         cbNenhum.checked = false;
                         otherDateContainer.classList.add("hidden");
-                    } else {
                         cbQualquer.checked = false;
                     }
                     
-                    // If all specific dates are checked manually, check Qualquer Dia
+                    // If all specific dates are checked manually, check Qualquer Dia and uncheck the 4 dates
                     const allChecked = Array.from(dateCbs).every(c => c.checked);
-                    if(allChecked) cbQualquer.checked = true;
+                    if (allChecked) {
+                        dateCbs.forEach(c => c.checked = false);
+                        cbQualquer.checked = true;
+                    }
                 });
             });
         });
