@@ -16,12 +16,23 @@ export async function onRequest(context) {
   if (context.request.method === "POST") {
     try {
       const data = await context.request.json();
+      const name = (data.name || "Anônimo").trim();
+      
+      // Check for duplicate name
+      const existing = await db.prepare("SELECT id FROM rsvp WHERE LOWER(name) = LOWER(?)").bind(name).first();
+      
+      if (existing) {
+        return new Response(JSON.stringify({ error: "Este nome já preencheu a pesquisa." }), { 
+          status: 400, 
+          headers: { "Content-Type": "application/json", ...corsHeaders } 
+        });
+      }
       
       const result = await db.prepare(
         "INSERT INTO rsvp (name, availability, guests, poll, timestamp) VALUES (?, ?, ?, ?, ?)"
       )
       .bind(
-        data.name || "Anônimo", 
+        name, 
         data.availability || "Nenhum dia", 
         data.guests || 0, 
         data.poll || "", 
