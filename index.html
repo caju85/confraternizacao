@@ -187,6 +187,7 @@
                         <span>[19/12: <span id="sum-d19" class="text-white font-bold">0</span>]</span>
                         <span>[20/12: <span id="sum-d20" class="text-white font-bold">0</span>]</span>
                         <span>[Qualquer: <span id="sum-any" class="text-white font-bold">0</span>]</span>
+                        <span>[Sugestões: <span id="sum-sug" class="text-yellow-400 font-bold"></span>]</span>
                     </div>
                 </div>
             </div>
@@ -223,11 +224,11 @@
                 
                 termLogs.innerHTML = `<div class="text-gray-500">> Sincronizando tabela rsvp_list...</div>`;
                 
-                let stats = { titulares: 0, acompanhantes: 0, kit: 0, rateio: 0, d12: 0, d13: 0, d19: 0, d20: 0, any: 0 };
+                let stats = { titulares: 0, acompanhantes: 0, kit: 0, rateio: 0, d12: 0, d13: 0, d19: 0, d20: 0, any: 0, sugs: [] };
                 
                 data.forEach(item => {
                     renderLogLine(item);
-                    if (!item.availability.includes('Nenhum dia') && !item.availability.includes('Sugestão:')) {
+                    if (item.availability !== 'Nenhum dia') {
                         stats.titulares++;
                         stats.acompanhantes += parseInt(item.guests || 0);
                         if (item.poll && item.poll.includes('Kit')) stats.kit += (1 + parseInt(item.guests || 0));
@@ -238,6 +239,11 @@
                         if (item.availability.includes('19/12')) stats.d19 += (1 + parseInt(item.guests || 0));
                         if (item.availability.includes('20/12')) stats.d20 += (1 + parseInt(item.guests || 0));
                         if (item.availability.includes('Qualquer dia ta ótimo!')) stats.any += (1 + parseInt(item.guests || 0));
+                        
+                        if (item.availability.includes('Sugestão:')) {
+                            let dt = item.availability.replace('Sugestão:', '').trim();
+                            if (dt) stats.sugs.push(dt);
+                        }
                     }
                 });
 
@@ -251,6 +257,11 @@
                 document.getElementById('sum-d19').textContent = stats.d19;
                 document.getElementById('sum-d20').textContent = stats.d20;
                 document.getElementById('sum-any').textContent = stats.any;
+                
+                let sugElem = document.getElementById('sum-sug');
+                if (sugElem) {
+                    sugElem.textContent = stats.sugs.length > 0 ? stats.sugs.join(', ') : 'Nenhuma';
+                }
 
                 connectionStatus.innerHTML = `
                     <div class="w-2 h-2 rounded-full bg-green-500"></div>
@@ -270,7 +281,7 @@
             const div = document.createElement('div');
             const safeName = (data.name || 'Anônimo').replace(/"/g, "'");
 
-            if (!data.availability.includes('Nenhum dia') && !data.availability.includes('Sugestão:')) {
+            if (data.availability !== 'Nenhum dia') {
                 let guestLabel = data.guests == 4 ? "'Familia Dias'" : data.guests;
                 let pollLabel = (data.poll || '').includes('Kit') ? "'Kit'" : "'Rateio'";
                 div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp, convidados, enquete) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-yellow-400">"${data.availability}"</span>, <span class="text-white">${guestLabel}</span>, <span class="text-white">${pollLabel}</span>); <span class="text-gray-500">// OK</span>`;
@@ -296,9 +307,14 @@
             let availability = "";
             if (availabilityArray.includes("Nenhum dia")) {
                 const otherDate = document.getElementById("other-date").value.trim();
-                availability = otherDate ? `Sugestão: ${otherDate}` : "Nenhum dia";
+                if (otherDate) {
+                    const [y,m,d] = otherDate.split('-');
+                    const fmt = d ? `${d}/${m}` : otherDate;
+                    availability = `Sugestão: ${fmt}`;
+                } else {
+                    availability = "Nenhum dia";
+                }
             } else {
-                // If anything is checked and not Nenhum Dia, exclude "Qualquer dia ta ótimo!" from the raw string if we want, or just keep it
                 availability = availabilityArray.join(", ");
             }
 
