@@ -50,29 +50,32 @@
                     <label class="block text-base font-bold text-red-700 mb-3">Selecione sua disponibilidade</label>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <label class="cursor-pointer">
-                            <input type="radio" name="availability" value="Nenhum dia" class="peer sr-only" required>
+                            <input type="checkbox" name="availability" value="Nenhum dia" class="peer sr-only" id="cb-nenhum">
                             <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-yellow-400 peer-checked:text-red-900 peer-checked:border-yellow-400 font-bold transition-all select-none text-sm">Nenhum dia</div>
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" name="availability" value="12/12" class="peer sr-only">
+                            <input type="checkbox" name="availability" value="12/12" class="peer sr-only date-cb">
                             <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">12/12</div>
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" name="availability" value="13/12" class="peer sr-only">
+                            <input type="checkbox" name="availability" value="13/12" class="peer sr-only date-cb">
                             <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">13/12</div>
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" name="availability" value="19/12" class="peer sr-only">
+                            <input type="checkbox" name="availability" value="19/12" class="peer sr-only date-cb">
                             <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">19/12</div>
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" name="availability" value="20/12" class="peer sr-only">
+                            <input type="checkbox" name="availability" value="20/12" class="peer sr-only date-cb">
                             <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600 font-bold transition-all select-none text-sm">20/12</div>
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" name="availability" value="Qualquer dia ta ótimo!" class="peer sr-only">
+                            <input type="checkbox" name="availability" value="Qualquer dia ta ótimo!" class="peer sr-only" id="cb-qualquer">
                             <div class="text-center bg-white border-2 border-gray-200 rounded-lg py-3 text-gray-600 peer-checked:bg-green-600 peer-checked:text-white peer-checked:border-green-600 font-bold transition-all select-none text-sm flex items-center justify-center">Qualquer dia</div>
                         </label>
+                    </div>
+                    <div id="other-date-container" class="mt-3 hidden">
+                        <input type="text" id="other-date" placeholder="Sugira uma nova data" class="w-full bg-white border-2 border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all font-medium text-sm">
                     </div>
                 </div>
 
@@ -223,17 +226,17 @@
                 
                 data.forEach(item => {
                     renderLogLine(item);
-                    if (item.availability !== 'Nenhum dia') {
+                    if (!item.availability.includes('Nenhum dia') && !item.availability.includes('Sugestão:')) {
                         stats.titulares++;
                         stats.acompanhantes += parseInt(item.guests || 0);
                         if (item.poll && item.poll.includes('Kit')) stats.kit += (1 + parseInt(item.guests || 0));
                         if (item.poll && item.poll.includes('Rateio')) stats.rateio += (1 + parseInt(item.guests || 0));
                         
-                        if (item.availability === '12/12') stats.d12 += (1 + parseInt(item.guests || 0));
-                        if (item.availability === '13/12') stats.d13 += (1 + parseInt(item.guests || 0));
-                        if (item.availability === '19/12') stats.d19 += (1 + parseInt(item.guests || 0));
-                        if (item.availability === '20/12') stats.d20 += (1 + parseInt(item.guests || 0));
-                        if (item.availability === 'Qualquer dia ta ótimo!') stats.any += (1 + parseInt(item.guests || 0));
+                        if (item.availability.includes('12/12')) stats.d12 += (1 + parseInt(item.guests || 0));
+                        if (item.availability.includes('13/12')) stats.d13 += (1 + parseInt(item.guests || 0));
+                        if (item.availability.includes('19/12')) stats.d19 += (1 + parseInt(item.guests || 0));
+                        if (item.availability.includes('20/12')) stats.d20 += (1 + parseInt(item.guests || 0));
+                        if (item.availability.includes('Qualquer dia ta ótimo!')) stats.any += (1 + parseInt(item.guests || 0));
                     }
                 });
 
@@ -266,7 +269,7 @@
             const div = document.createElement('div');
             const safeName = (data.name || 'Anônimo').replace(/"/g, "'");
 
-            if (data.availability !== 'Nenhum dia') {
+            if (!data.availability.includes('Nenhum dia') && !data.availability.includes('Sugestão:')) { {
                 let guestLabel = data.guests == 4 ? "'Familia Dias'" : data.guests;
                 let pollLabel = (data.poll || '').includes('Kit') ? "'Kit'" : "'Rateio'";
                 div.innerHTML = `> <span class="text-blue-400">INSERT INTO</span> rsvp (nome, disp, convidados, enquete) <span class="text-blue-400">VALUES</span> ("<span class="text-white">${safeName}</span>", <span class="text-yellow-400">"${data.availability}"</span>, <span class="text-white">${guestLabel}</span>, <span class="text-white">${pollLabel}</span>); <span class="text-gray-500">// OK</span>`;
@@ -285,9 +288,18 @@
             const name = nameInput.value.trim();
             if (!name) { showMessage("Por favor, digite seu Nome Completo."); return; }
 
-            const availabilityRadio = document.querySelector('input[name="availability"]:checked');
-            if (!availabilityRadio) { showMessage("Selecione sua disponibilidade."); return; }
-            const availability = availabilityRadio.value;
+            const availabilityCheckboxes = document.querySelectorAll('input[name="availability"]:checked');
+            if (availabilityCheckboxes.length === 0) { showMessage("Selecione sua disponibilidade."); return; }
+            let availabilityArray = Array.from(availabilityCheckboxes).map(cb => cb.value);
+            
+            let availability = "";
+            if (availabilityArray.includes("Nenhum dia")) {
+                const otherDate = document.getElementById("other-date").value.trim();
+                availability = otherDate ? `Sugestão: ${otherDate}` : "Nenhum dia";
+            } else {
+                // If anything is checked and not Nenhum Dia, exclude "Qualquer dia ta ótimo!" from the raw string if we want, or just keep it
+                availability = availabilityArray.join(", ");
+            }
 
             const guestRadio = document.querySelector('input[name="guests"]:checked');
             if (!guestRadio) { showMessage("Selecione a quantidade de acompanhantes."); return; }
@@ -354,6 +366,51 @@
             fetchReservations();
             setInterval(fetchReservations, 10000);
         };
+    
+        // JS Checkbox Logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const cbNenhum = document.getElementById("cb-nenhum");
+            const cbQualquer = document.getElementById("cb-qualquer");
+            const dateCbs = document.querySelectorAll(".date-cb");
+            const otherDateContainer = document.getElementById("other-date-container");
+            const otherDateInput = document.getElementById("other-date");
+
+            cbNenhum.addEventListener("change", (e) => {
+                if (e.target.checked) {
+                    cbQualquer.checked = false;
+                    dateCbs.forEach(cb => cb.checked = false);
+                    otherDateContainer.classList.remove("hidden");
+                } else {
+                    otherDateContainer.classList.add("hidden");
+                }
+            });
+
+            cbQualquer.addEventListener("change", (e) => {
+                if (e.target.checked) {
+                    cbNenhum.checked = false;
+                    otherDateContainer.classList.add("hidden");
+                    dateCbs.forEach(cb => cb.checked = true);
+                } else {
+                    dateCbs.forEach(cb => cb.checked = false);
+                }
+            });
+
+            dateCbs.forEach(cb => {
+                cb.addEventListener("change", () => {
+                    if (cb.checked) {
+                        cbNenhum.checked = false;
+                        otherDateContainer.classList.add("hidden");
+                    } else {
+                        cbQualquer.checked = false;
+                    }
+                    
+                    // If all specific dates are checked manually, check Qualquer Dia
+                    const allChecked = Array.from(dateCbs).every(c => c.checked);
+                    if(allChecked) cbQualquer.checked = true;
+                });
+            });
+        });
+
     </script>
 </body>
 </html>
