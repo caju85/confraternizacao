@@ -5,4 +5,4 @@ compatibility_date = "2024-03-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "rsvp_db"
-database_id = "COLOQUE_SEU_DATABASE_ID_AQUI"
+database_id = "754f7e44-5c3c-41dc-8ae3-a77434ff7e77"
