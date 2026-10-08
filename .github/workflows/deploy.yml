@@ -1,0 +1,41 @@
+name: Deploy to Cloudflare
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Ensure D1 Database and Update wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler d1 create rsvp_db || true
+          DB_ID=$(wrangler d1 list --json | jq -r '.[] | select(.name == "rsvp_db") | .uuid')
+          echo "Found Database ID: $DB_ID"
+          sed -i "s/COLOQUE_SEU_DATABASE_ID_AQUI/$DB_ID/g" wrangler.toml
+          cat wrangler.toml
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler pages project create confraternizacao --production-branch master || true
+          wrangler pages deploy . --project-name confraternizacao --branch master
