@@ -36,11 +36,34 @@
 
         <!-- Formulário principal -->
         <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100">
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded-r-lg">
                 <p class="text-sm text-blue-700 font-medium flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     O espaço a ser alugado e os valores serão definidos após a resposta de todos.
                 </p>
+            </div>
+
+            <!-- Banner Parcial em Tempo Real -->
+            <div class="bg-gradient-to-r from-red-50 via-amber-50 to-orange-50 border-2 border-red-100 p-4 mb-6 rounded-xl flex items-center justify-between shadow-xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                        📊
+                    </div>
+                    <div>
+                        <div class="text-xs uppercase tracking-wider font-extrabold text-red-900">Prévia da Pesquisa em Tempo Real</div>
+                        <div class="text-xs text-gray-700 font-medium">
+                            <span id="banner-users" class="font-bold text-red-700">0</span> titulares + 
+                            <span id="banner-guests" class="font-bold text-red-700">0</span> acompanhantes = 
+                            <span id="banner-total" class="font-black text-gray-900">0</span> pessoas confirmadas
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-green-700 bg-green-100/90 px-2.5 py-1 rounded-full font-bold border border-green-200">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        Ao Vivo
+                    </span>
+                </div>
             </div>
             <form id="rsvp-form" class="space-y-6">
                 
@@ -83,6 +106,24 @@
                     <div id="other-date-container" class="mt-3 hidden bg-yellow-50 p-4 rounded-lg border-2 border-yellow-200">
                         <label class="block text-sm font-bold text-gray-800 mb-2">📅 Qual data você sugere?</label>
                         <input type="date" id="other-date" class="w-full bg-white border-2 border-gray-200 rounded-lg px-4 py-2 text-gray-800 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all font-medium text-base">
+                    </div>
+
+                    <!-- Prévia da Enquete de Datas -->
+                    <div class="mt-5 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-black uppercase tracking-wider text-red-800 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Prévia dos Dias Mais Votados
+                            </span>
+                            <span id="preview-dates-badge" class="text-[11px] font-bold text-gray-600 bg-gray-200/80 px-2.5 py-0.5 rounded-full">Carregando...</span>
+                        </div>
+                        <div id="preview-dates-list" class="space-y-2">
+                            <!-- Injetado dinamicamente -->
+                        </div>
+                        <p class="text-[11px] text-gray-500 mt-2.5 italic flex items-center gap-1.5">
+                            <span class="not-italic">💡</span>
+                            <span>Participantes com "Qualquer dia" estão somados como flexíveis em todas as opções.</span>
+                        </p>
                     </div>
                 </div>
 
@@ -134,6 +175,20 @@
                             </div>
                             <span class="font-semibold text-gray-800 select-none">Rateio Picanha / Chopp / Refri</span>
                         </label>
+                    </div>
+
+                    <!-- Prévia da Enquete do Churrasco -->
+                    <div class="mt-5 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-black uppercase tracking-wider text-red-800 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                                Prévia: Picanha/Chopp vs Kit Churrasco
+                            </span>
+                            <span id="preview-poll-badge" class="text-[11px] font-bold text-gray-600 bg-gray-200/80 px-2.5 py-0.5 rounded-full">Carregando...</span>
+                        </div>
+                        <div id="preview-poll-list" class="space-y-2.5">
+                            <!-- Injetado dinamicamente -->
+                        </div>
                     </div>
                 </div>
 
@@ -214,6 +269,109 @@
             formMessage.classList.add('hidden');
         }
 
+        function updatePreviews(stats) {
+            // 1. Banner topo
+            const bannerUsers = document.getElementById('banner-users');
+            const bannerGuests = document.getElementById('banner-guests');
+            const bannerTotal = document.getElementById('banner-total');
+            if (bannerUsers) bannerUsers.textContent = stats.titulares;
+            if (bannerGuests) bannerGuests.textContent = stats.acompanhantes;
+            if (bannerTotal) bannerTotal.textContent = stats.titulares + stats.acompanhantes;
+
+            // 2. Prévia Enquete Churrasco
+            const pollTotalPeople = stats.kit + stats.rateio;
+            const pollTotalVotes = stats.kitVotes + stats.rateioVotes;
+            const pollBadge = document.getElementById('preview-poll-badge');
+            if (pollBadge) {
+                pollBadge.textContent = `${pollTotalPeople} pessoas (${pollTotalVotes} votos)`;
+            }
+
+            const pollList = document.getElementById('preview-poll-list');
+            if (pollList) {
+                const rateioPct = pollTotalPeople > 0 ? Math.round((stats.rateio / pollTotalPeople) * 100) : 0;
+                const kitPct = pollTotalPeople > 0 ? Math.round((stats.kit / pollTotalPeople) * 100) : 0;
+                
+                pollList.innerHTML = `
+                    <div class="bg-white p-3 rounded-xl border border-gray-200/80 shadow-xs hover:border-red-300 transition-all">
+                        <div class="flex justify-between items-center text-xs font-semibold text-gray-800 mb-1.5">
+                            <span class="flex items-center gap-1.5 font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-600 inline-block"></span>
+                                🥩 Rateio Picanha / Chopp / Refri
+                            </span>
+                            <span class="text-red-700 font-bold">${rateioPct}% <span class="text-gray-400 font-normal">(${stats.rateio} pessoas / ${stats.rateioVotes} votos)</span></span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-red-600 h-2.5 rounded-full transition-all duration-700" style="width: ${rateioPct}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-xl border border-gray-200/80 shadow-xs hover:border-amber-300 transition-all">
+                        <div class="flex justify-between items-center text-xs font-semibold text-gray-800 mb-1.5">
+                            <span class="flex items-center gap-1.5 font-bold">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                                🍖 Kit churras + Sua Bebida
+                            </span>
+                            <span class="text-amber-700 font-bold">${kitPct}% <span class="text-gray-400 font-normal">(${stats.kit} pessoas / ${stats.kitVotes} votos)</span></span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-amber-500 h-2.5 rounded-full transition-all duration-700" style="width: ${kitPct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 3. Prévia Datas
+            const datesBadge = document.getElementById('preview-dates-badge');
+            if (datesBadge) {
+                datesBadge.textContent = `${stats.titulares + stats.acompanhantes} confirmados`;
+            }
+
+            const datesList = document.getElementById('preview-dates-list');
+            if (datesList) {
+                const dateItems = [
+                    { label: 'Qualquer dia ta ótimo!', sub: 'Flexível para qualquer dia', people: stats.any, votes: stats.anyVotes, color: 'bg-green-600', text: 'text-green-700' },
+                    { label: '19/12 (Sexta-feira)', sub: `${stats.d19 + stats.any} pessoas possíveis`, people: stats.d19, votes: stats.d19Votes, color: 'bg-red-600', text: 'text-red-700' },
+                    { label: '20/12 (Sábado)', sub: `${stats.d20 + stats.any} pessoas possíveis`, people: stats.d20, votes: stats.d20Votes, color: 'bg-red-600', text: 'text-red-700' },
+                    { label: '12/12 (Sexta-feira)', sub: `${stats.d12 + stats.any} pessoas possíveis`, people: stats.d12, votes: stats.d12Votes, color: 'bg-red-500', text: 'text-red-600' },
+                    { label: '13/12 (Sábado)', sub: `${stats.d13 + stats.any} pessoas possíveis`, people: stats.d13, votes: stats.d13Votes, color: 'bg-red-500', text: 'text-red-600' }
+                ];
+
+                Object.entries(stats.sugs).forEach(([sugDate, count]) => {
+                    dateItems.push({
+                        label: `Sugestão: ${sugDate}`,
+                        sub: 'Data sugerida avulsa',
+                        people: count,
+                        votes: stats.sugsVotes[sugDate] || 1,
+                        color: 'bg-yellow-500',
+                        text: 'text-yellow-700'
+                    });
+                });
+
+                const maxPeople = Math.max(...dateItems.map(d => d.people), 1);
+
+                let html = '';
+                dateItems.forEach(item => {
+                    const barPct = Math.round((item.people / maxPeople) * 100);
+                    html += `
+                        <div class="bg-white p-2.5 rounded-lg border border-gray-200/80 shadow-xs hover:border-red-300 transition-all">
+                            <div class="flex justify-between items-center text-xs mb-1">
+                                <span class="font-bold text-gray-800 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full ${item.color} inline-block"></span>
+                                    ${item.label}
+                                    <span class="text-[10px] text-gray-400 font-normal hidden sm:inline">(${item.sub})</span>
+                                </span>
+                                <span class="font-bold ${item.text}">${item.people} pessoas <span class="text-gray-400 font-normal">(${item.votes} votos)</span></span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                <div class="${item.color} h-2 rounded-full transition-all duration-700" style="width: ${barPct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                datesList.innerHTML = html;
+            }
+        }
+
         async function fetchReservations() {
             try {
                 const res = await fetch('/api/rsvp');
@@ -222,21 +380,55 @@
                 
                 termLogs.innerHTML = `<div class="text-gray-500">> Sincronizando tabela rsvp_list...</div>`;
                 
-                let stats = { titulares: 0, acompanhantes: 0, kit: 0, rateio: 0, d12: 0, d13: 0, d19: 0, d20: 0, any: 0, sugs: {} };
+                let stats = { 
+                    titulares: 0, acompanhantes: 0, 
+                    kit: 0, kitVotes: 0, 
+                    rateio: 0, rateioVotes: 0, 
+                    d12: 0, d12Votes: 0, 
+                    d13: 0, d13Votes: 0, 
+                    d19: 0, d19Votes: 0, 
+                    d20: 0, d20Votes: 0, 
+                    any: 0, anyVotes: 0, 
+                    sugs: {}, sugsVotes: {} 
+                };
                 
                 data.forEach(item => {
                     renderLogLine(item);
                     if (item.availability !== 'Nenhum dia') {
+                        const guests = parseInt(item.guests || 0);
+                        const totalPessoas = 1 + guests;
                         stats.titulares++;
-                        stats.acompanhantes += parseInt(item.guests || 0);
-                        if (item.poll && item.poll.includes('Kit')) stats.kit += (1 + parseInt(item.guests || 0));
-                        if (item.poll && item.poll.includes('Rateio')) stats.rateio += (1 + parseInt(item.guests || 0));
+                        stats.acompanhantes += guests;
+
+                        if (item.poll && item.poll.includes('Kit')) {
+                            stats.kit += totalPessoas;
+                            stats.kitVotes++;
+                        }
+                        if (item.poll && item.poll.includes('Rateio')) {
+                            stats.rateio += totalPessoas;
+                            stats.rateioVotes++;
+                        }
                         
-                        if (item.availability.includes('12/12')) stats.d12 += (1 + parseInt(item.guests || 0));
-                        if (item.availability.includes('13/12')) stats.d13 += (1 + parseInt(item.guests || 0));
-                        if (item.availability.includes('19/12')) stats.d19 += (1 + parseInt(item.guests || 0));
-                        if (item.availability.includes('20/12')) stats.d20 += (1 + parseInt(item.guests || 0));
-                        if (item.availability.includes('Qualquer dia ta ótimo!')) stats.any += (1 + parseInt(item.guests || 0));
+                        if (item.availability.includes('12/12')) {
+                            stats.d12 += totalPessoas;
+                            stats.d12Votes++;
+                        }
+                        if (item.availability.includes('13/12')) {
+                            stats.d13 += totalPessoas;
+                            stats.d13Votes++;
+                        }
+                        if (item.availability.includes('19/12')) {
+                            stats.d19 += totalPessoas;
+                            stats.d19Votes++;
+                        }
+                        if (item.availability.includes('20/12')) {
+                            stats.d20 += totalPessoas;
+                            stats.d20Votes++;
+                        }
+                        if (item.availability.includes('Qualquer dia ta ótimo!')) {
+                            stats.any += totalPessoas;
+                            stats.anyVotes++;
+                        }
                         
                         if (item.availability.includes('Sugestão:')) {
                             let dt = item.availability.replace('Sugestão:', '').trim();
@@ -245,7 +437,8 @@
                                 if (parts.length === 3) dt = parts[2] + '/' + parts[1];
                             }
                             if (dt) {
-                                stats.sugs[dt] = (stats.sugs[dt] || 0) + (1 + parseInt(item.guests || 0));
+                                stats.sugs[dt] = (stats.sugs[dt] || 0) + totalPessoas;
+                                stats.sugsVotes[dt] = (stats.sugsVotes[dt] || 0) + 1;
                             }
                         }
                     }
@@ -275,6 +468,9 @@
                         sugsContainer.innerHTML = `<span>[Sugestões: <span class="text-yellow-400 font-bold">Nenhuma</span>]</span>`;
                     }
                 }
+
+                // Atualizar as prévias visuais em tempo real
+                updatePreviews(stats);
 
                 connectionStatus.innerHTML = `
                     <div class="w-2 h-2 rounded-full bg-green-500"></div>
